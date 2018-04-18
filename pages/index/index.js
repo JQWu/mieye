@@ -1,15 +1,17 @@
 var mieye = require('../../api/mieye.js');
-const app = getApp()
+var bmap = require('../../libs/bmap-wx.js');
+var wxMarkerData = [];
 
 Page({
     data: {
-        motto: 'Hello World',
         userInfo: {},
         hasUserInfo: false,
         restaurants: [],
-        canIUse: wx.canIUse('button.open-type.getUserInfo'),
         isRun: false,
         timer: null,
+        markers: [],
+        latitude: '',
+        longitude: '',
         pick: { show: false }
     },
     //事件处理函数
@@ -20,29 +22,33 @@ Page({
     },
 
     onLoad: function () {
-        if (app.globalData.userInfo) {
-            this.setData({
-                userInfo: app.globalData.userInfo,
-                hasUserInfo: true
-            })
-        } else if (this.data.canIUse) {
-            app.userInfoReadyCallback = res => {
+        wx.getUserInfo({
+            success: res => {
                 this.setData({
                     userInfo: res.userInfo,
                     hasUserInfo: true
                 })
             }
-        } else {
-            wx.getUserInfo({
-                success: res => {
-                    app.globalData.userInfo = res.userInfo
-                    this.setData({
-                        userInfo: res.userInfo,
-                        hasUserInfo: true
-                    })
-                }
-            })
-        }
+        })
+
+        var  that = this
+        var BMap = new bmap.BMapWX({ ak: 'XHFmncp2hARho4HuVz2VfCC1xxm7fr8a' });
+        BMap.regeocoding({
+            success: function(data){
+                wxMarkerData = data.wxMarkerData;
+                that.setData({
+                    markers: wxMarkerData
+                });
+                that.setData({
+                    latitude: wxMarkerData[0].latitude
+                });
+                that.setData({
+                    longitude: wxMarkerData[0].longitude
+                }); 
+            },
+            iconPath: '../../images/marker.png',
+            iconTapPath: '../../images/marker.png'
+        }); 
 
         wx.onAccelerometerChange(function (e) {
             if (e.x > 1 || e.y > 1 || e.z > 1) {
@@ -85,7 +91,7 @@ Page({
                     restaurants: restaurants
                 });
             }, 100);
-        
+
             this.setData({
                 timer: timer
             });
@@ -116,7 +122,7 @@ Page({
         wx.getLocation({
             altitude: true,
             success: function (res) {
-                var results = mieye.getNearRestaurants(res.latitude, res.longitude, 3000);
+                var results = mieye.getNearRestaurants(res.latitude, res.longitude);
                 results.then(function (restaurants) {
                     for (var i = 0; i < restaurants.length; i++) {
                         restaurants[i].show = false
@@ -131,8 +137,6 @@ Page({
     },
 
     getUserInfo: function (e) {
-        console.log(e)
-        app.globalData.userInfo = e.detail.userInfo
         this.setData({
             userInfo: e.detail.userInfo,
             hasUserInfo: true

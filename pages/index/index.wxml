@@ -1,5 +1,4 @@
-<!--index.wxml-->
-<view class="container" style='padding-top:50px;'>
+<view style='padding-top:30px;'>
     <view class="userinfo">
         <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
         <block wx:else>
@@ -8,17 +7,20 @@
         </block>
     </view>
 
-    <view class='temp' style='top: 300px;'>
+    <!-- <view class='pick'>
         <text hidden='{{!pick.show}}'> {{pick.name}} </text>
+    </view> -->
+    <view class="map_container">
+        <map class="map" id="map" longitude="{{longitude}}" latitude="{{latitude}}" scale="18" show-location="true" markers="{{markers}}" bindmarkertap="makertap"></map>
     </view>
 
     <view class="usermotto">
         <view>
             <image src='../../images/shake.svg' style="width: 50px; height: 50px;" bindtap='findRestaurant'></image>
         </view>
-    </view>
-    <view>
-        <text style='padding:5px;font-size:14px;color:gray;'>开始发现身边的美食吧</text>
+        <view>
+            <text style='padding:5px;font-size:14px;color:gray;'>开始发现身边的美食吧</text>
+        </view>
     </view>
 
     <view wx:for="{{restaurants}}" wx:for-item="item">
