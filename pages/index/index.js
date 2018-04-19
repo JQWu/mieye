@@ -30,91 +30,78 @@ Page({
                 })
             }
         })
-
-        var  that = this
-        var BMap = new bmap.BMapWX({ ak: 'XHFmncp2hARho4HuVz2VfCC1xxm7fr8a' });
-        BMap.regeocoding({
-            success: function(data){
-                wxMarkerData = data.wxMarkerData;
-                that.setData({
-                    markers: wxMarkerData
-                });
-                that.setData({
-                    latitude: wxMarkerData[0].latitude
-                });
-                that.setData({
-                    longitude: wxMarkerData[0].longitude
-                }); 
-            },
-            iconPath: '../../images/marker.png',
-            iconTapPath: '../../images/marker.png'
-        }); 
-
-        wx.onAccelerometerChange(function (e) {
-            if (e.x > 1 || e.y > 1 || e.z > 1) {
-                findRestaurant()
-            }
-        })
     },
 
-    findRestaurant: function () {
+    findRestaurantStart: function () {
         var self = this;
-        if (!this.data.isRun) {
-            var res = wx.getSystemInfoSync()
-            var width = res.windowWidth;
-            var height = res.windowHeight;
+        var res = wx.getSystemInfoSync()
+        var width = res.windowWidth;
+        var height = res.windowHeight;
 
-            var restaurants = this.data.restaurants
-            var pick = this.data.pick
-            pick.show = false
-            this.setData({
-                pick: pick
+        var restaurants = self.data.restaurants
+        var pick = self.data.pick
+        pick.show = false
+        self.setData({
+            pick: pick
+        });
+
+        var timer = setInterval(function () {
+            wx.vibrateShort({
             });
-
-            var timer = setInterval(function () {
-                for (var i = 0; i < restaurants.length; i++) {
-                    restaurants[i].show = false
-                }
-
-                var index = Math.floor(Math.random() * restaurants.length);
-
-                restaurants[index].top = (150 + Math.ceil(Math.random() / 2 * height)) + "px";
-                restaurants[index].left = Math.ceil(Math.random() * (width - 150)) + "px";
-                if (restaurants[index].left + 100 > width) {
-                    restaurants[index].left = Math.ceil(restaurants[index].left * 0.4)
-                }
-                restaurants[index].fontSize = Math.ceil(Math.random() * (40 - 14) + 14) + "px";
-                restaurants[index].color = "rgba(0,0,0,." + Math.random() + ")";
-                restaurants[index].show = true;
-
-                self.setData({
-                    restaurants: restaurants
-                });
-            }, 100);
-
-            this.setData({
-                timer: timer
-            });
-        } else {
-            clearInterval(this.data.timer)
-            var restaurants = this.data.restaurants
             for (var i = 0; i < restaurants.length; i++) {
                 restaurants[i].show = false
             }
 
             var index = Math.floor(Math.random() * restaurants.length);
-            var pick = JSON.parse(JSON.stringify(restaurants[index]));
-            pick.show = true
+
+            restaurants[index].top = (150 + Math.ceil(Math.random() / 2 * height)) + "px";
+            restaurants[index].left = Math.ceil(Math.random() * (width - 150)) + "px";
+            if (restaurants[index].left + 100 > width) {
+                restaurants[index].left = Math.ceil(restaurants[index].left * 0.4)
+            }
+            restaurants[index].fontSize = Math.ceil(Math.random() * (40 - 14) + 14) + "px";
+            restaurants[index].color = "rgba(0,0,0,." + Math.random() + ")";
+            restaurants[index].show = true;
 
             self.setData({
-                pick: pick,
                 restaurants: restaurants
             });
-        }
-        this.setData({
-            isRun: !this.data.isRun
-        });
+        }, 100);
 
+        self.setData({
+            timer: timer
+        });
+    },
+
+
+    findRestaurantEnd: function () {
+        var self = this;
+        wx.vibrateLong({
+
+        });
+        clearInterval(self.data.timer)
+        var restaurants = self.data.restaurants
+        for (var i = 0; i < restaurants.length; i++) {
+            restaurants[i].show = false
+        }
+
+        var index = Math.floor(Math.random() * restaurants.length);
+        var pick = JSON.parse(JSON.stringify(restaurants[index]));
+        if (pick.name > 10) {
+            pick.name = pick.name.substring(0, 10) + "..."
+        }
+        if (pick.address.length > 15) {
+            pick.address = "...." + pick.address.substring(pick.address.length - 15, pick.address.length)
+        }
+        if (pick.detail_info.tag) {
+            pick.detail_info.tag = pick.detail_info.tag.substring("美食;".length, pick.detail_info.tag.length)
+        }
+        pick.show = true
+
+        self.setData({
+            pick: pick,
+            restaurants: restaurants
+        });
     },
 
     onShow: function () {
@@ -143,4 +130,10 @@ Page({
         })
     },
 
+    gotoViewMap: function (e) {
+        var pick = this.data.pick;
+        wx.navigateTo({
+            url: '/pages/map/map?longitude=' + pick.location.lng + '&latitude=' + pick.location.lat + '&title=' + pick.name,
+        })
+    }
 })
