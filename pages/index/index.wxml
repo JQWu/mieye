@@ -1,5 +1,9 @@
 <view style='padding-top:30px;'>
     <view class="userinfo">
+        <!-- <view style='position:fixed; _position:absolute; right:20px; top:30px; padding:10px;'>
+            <image src='../../images/left-unfold.svg' style="width: 20px; height:20px;"></image>
+        </view> -->
+
         <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
         <block wx:else>
             <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
@@ -15,15 +19,17 @@
         <view style='padding:10px;font-size:14px;'>
             <image src='../../images/map-icon.svg' style="width: 20px; height: 20px;"></image>
             <text style='padding-left:5px;padding-right:5px;'> {{pick.address}}</text>
-            <text>(<text style=' color: orange'>{{pick.detail_info.distance}}</text>米 <text wx:if="{{pick.detail_info.price}}"> /<text style=' color: orange'>{{pick.detail_info.price}}</text>元</text>)</text>
-
-            
+            <text>(距<text style=' color: orange'>{{pick.detail_info.distance}}</text>米)</text>
+        </view>
+        <view style='font-size:14px;'>
+            <text wx:if="{{pick.detail_info.price}}" style='padding-right:10px;'>约<text style=' color: orange'>{{pick.detail_info.price}}</text>元/人</text>
+            <text wx:if="{{pick.detail_info.overall_rating}}">评分<text style=' color: orange'>{{pick.detail_info.overall_rating}}</text>分</text>
         </view>
     </view>
 
     <view class="usermotto">
         <view>
-            <image src='../../images/touch.svg' style="width: 50px; height: 50px;" bindtouchstart='findRestaurantStart' bindtouchend='findRestaurantEnd'></image>
+            <image src='../../images/touch-bule.svg' style="width: 90px; height:90px;" bindtouchstart='findRestaurantStart' bindtouchend='findRestaurantEnd'></image>
         </view>
         <view>
             <text style='padding:5px;font-size:14px;color:gray;'>开始发现身边的美食吧</text>

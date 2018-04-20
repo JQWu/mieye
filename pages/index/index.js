@@ -39,6 +39,14 @@ Page({
         var height = res.windowHeight;
 
         var restaurants = self.data.restaurants
+
+        if (restaurants.length == 0) {
+            wx.showToast({
+                title: '未发现餐厅',
+            })
+            return
+        }
+
         var pick = self.data.pick
         pick.show = false
         self.setData({

@@ -7,7 +7,7 @@
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "今日食乜野",
+    "navigationBarTitleText": "食乜嘢",
     "navigationBarTextStyle":"black"
   }
 }
